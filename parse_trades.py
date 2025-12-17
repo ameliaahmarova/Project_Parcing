@@ -1,7 +1,7 @@
 import re
 from bs4 import BeautifulSoup
 
-def load_html(path="data/torgi.html"):
+def load_html(path="torgi.html"):
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
@@ -79,4 +79,5 @@ def main():
         print()
 
 if __name__ == "__main__":
+
     main()
