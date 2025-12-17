@@ -1,13 +1,28 @@
 import re
 from bs4 import BeautifulSoup
 
-def load_html(path="torgi.html"):
+def load_html(path="data/torgi.html"):
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 def parse_price(price_str: str) -> int:
-    cleaned = re.sub(r"[^\d]", "", price_str)
-    return int(cleaned)
+    # Удаляем "руб." и пробелы
+    price_str = price_str.replace("руб.", "").strip()
+    
+    # Заменяем пробелы (разделители тысяч) на пустую строку
+    price_str = price_str.replace(" ", "")
+    
+    # Убираем все нецифровые символы, кроме точки
+    cleaned = ""
+    for char in price_str:
+        if char.isdigit() or char == ".":
+            cleaned += char
+    
+    if cleaned:
+        # Преобразуем в float и округляем до рублей
+        return int(float(cleaned))
+    
+    return 0
 
 def parse_lots(html: str):
     soup = BeautifulSoup(html, "html.parser")
@@ -45,10 +60,13 @@ def parse_lots(html: str):
 def filter_by_price(lots, min_price=None, max_price=None):
     result = []
     for lot in lots:
-        if min_price is not None and lot["price"] < min_price:
+        price = lot["price"]
+        
+        if min_price is not None and price < min_price:
             continue
-        if max_price is not None and lot["price"] > max_price:
+        if max_price is not None and price > max_price:
             continue
+            
         result.append(lot)
     return result
 
